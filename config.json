@@ -1,0 +1,16 @@
+{
+    "DATA" : {
+        "PORTFOLIO_PATH" : "data/portfolio.json",
+        "PROFILE_PATH" : "data/profile.json",
+        "TRANSCRIPT_PATH" : "data/transcript.json"
+    },
+    "COLS" : {
+        "FEATURES_TO_USE" : ["time_h","offer_type","difficulty","duration_h","gender","age","income"],
+        "TARGET" : ["event"]
+    },
+    "MODEL" : {
+        "TRAIN_SIZE" :0.8,
+        "RANDOM_STATE": 42,
+        "MAX_DEPTH" : 5
+    }
+}
