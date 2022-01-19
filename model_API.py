@@ -2,7 +2,6 @@
 import pandas as pd
 import numpy as np
 import json
-import logging
 from fastapi import FastAPI
 from pydantic import BaseModel, confloat
 import pickle

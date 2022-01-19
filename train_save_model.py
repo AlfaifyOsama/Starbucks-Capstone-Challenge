@@ -54,7 +54,7 @@ def load_transcript(transcript_file_path: str) -> pd.DataFrame:
 
 #_____________________________________________________________________________________________
 #Functions for cleaning the datasets
-def portfolio_cleaning(portfolio:pd.DataFrame) -> pd.DataFrame:
+def portfolio_cleaning(portfolio: pd.DataFrame) -> pd.DataFrame:
     '''Function for cleaning portfolio dataframe.
     Parameters
     ----------
@@ -67,17 +67,17 @@ def portfolio_cleaning(portfolio:pd.DataFrame) -> pd.DataFrame:
          clean portfolio dataframe
     '''
     # Change the unit of 'duration' column from days to hours
-    portfolio['duration'] = portfolio['duration'] *24
-    portfolio= portfolio.rename({'id': 'offer_id','duration':'duration_h'}, axis=1, inplace= True)
+    portfolio['duration'] = portfolio['duration']*24
+    portfolio.rename({'id': 'offer_id','duration':'duration_h'}, axis=1, inplace= True)
     
     # Apply one hot encoding to channels column
-    #portfolio['web'] = portfolio['channels'].apply(lambda x: 1 if 'web' in x else 0)
-    #portfolio['email'] = portfolio['channels'].apply(lambda x: 1 if 'email' in x else 0)
-    #portfolio['mobile'] = portfolio['channels'].apply(lambda x: 1 if 'mobile' in x else 0)
-    #portfolio['social'] = portfolio['channels'].apply(lambda x: 1 if 'social' in x else 0)
+    portfolio['web'] = portfolio['channels'].apply(lambda x: 1 if 'web' in x else 0)
+    portfolio['email'] = portfolio['channels'].apply(lambda x: 1 if 'email' in x else 0)
+    portfolio['mobile'] = portfolio['channels'].apply(lambda x: 1 if 'mobile' in x else 0)
+    portfolio['social'] = portfolio['channels'].apply(lambda x: 1 if 'social' in x else 0)
     
     # Drop channels column
-    #portfolio.drop(['channels'], axis=1, inplace=True)
+    portfolio.drop(['channels'], axis=1, inplace=True)
     
     # Replace categorical variable to numeric in offer_type 
     portfolio['offer_type'].replace(['bogo', 'informational','discount'],[0, 1,2], inplace=True)
@@ -128,10 +128,10 @@ def transcript_cleaning(transcript:pd.DataFrame) -> pd.DataFrame:
     
     # Remove customer id's that are not in the customer profile DataFrame
     transcript = transcript[transcript['customer_id'].isin(profile['customer_id'])]
-    
+    transcript = pd.concat([transcript, transcript['value'].apply(pd.Series)], axis=1)
     # Clean up the duplicates in offer id and offer_id and meger into one column
     transcript['clean_id'] = np.where(transcript['offer id'].isnull() &
-    transcript['offer_id'].notnull(), transcript['offer_id'],transcript['offer id'])
+                                      transcript['offer_id'].notnull(), transcript['offer_id'],transcript['offer id'])
 
     # Drop the original id columns
     transcript.drop(['offer id', 'offer_id'], axis=1, inplace=True)
@@ -139,7 +139,7 @@ def transcript_cleaning(transcript:pd.DataFrame) -> pd.DataFrame:
     # Rename the offer_id column
     transcript.rename(columns={'clean_id': 'offer_id'}, inplace=True)
     
-    # drop value column
+    # Drop value column
     transcript.drop('value', axis=1, inplace=True)
 
     # Drop amount and reward columns since they have a huage number of missing valuse
@@ -214,8 +214,14 @@ def model_training(master_df: pd.DataFrame, cfg: dict) -> list:
     features = cfg['COLS']['FEATURES_TO_USE']
     target = cfg['COLS']['TARGET']
 
-    X = master_df[[features]]
-    y = master_df[target]
+    X = np.array(master_df[features])
+    y = np.array(master_df[target]).ravel()
+    
+    # Normalizing some numerical values 
+    #scaler = MinMaxScaler()
+    #features_scaled = ['time_h','duration_h', 'difficulty']
+    #X_scaled = X.copy()
+    #X_scaled[features_scaled] = scaler.fit_transform(X_scaled[features_scaled])
     
     # Train and split the dataframe
     X_train, X_test, y_train, y_test = train_test_split(X,y, train_size= cfg['MODEL']['TRAIN_SIZE'],
@@ -264,5 +270,6 @@ if __name__ == "__main__":
     
     # Load the model into variable
     Os_trained_model = trained_model
+    
     #save model to disk
     save_model_to_pickle(Os_trained_model)
