@@ -38,9 +38,11 @@ I got the following insights from the datasets:
 - The most common offer type among all age groups is the BOGO , followed by the Discount Offers. Whereas, the least common offer to be sent is the informational offers. 
 ## 5. How to run the API
 You need to run the following files in the terminal:
-    1- `python train_save_model.py`
-    2- `python model_API.py`
-    3- `uvicorn model_API:app --port=5000` 
+1. `python train_save_model.py`
+2. `python model_API.py`
+3. `uvicorn model_API:app --port=5000` 
+4. Open Final API_test file and run the first cell with your own inputs.
+
 ## 5. Acknowledgments
 - [Numpy](https://numpy.org/)
 - [Pandas](https://pandas.pydata.org/)
